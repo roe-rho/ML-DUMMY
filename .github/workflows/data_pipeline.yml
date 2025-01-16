@@ -2,9 +2,9 @@ name: data-pipeline-workflow
 
 on:
   push:
-    workflow-dispatch:
-    schedule:
-      - cron: '0 9 * * *'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
 
 jobs:
   run-data-pipeline:
@@ -37,7 +37,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git add .
           git diff --staged --quiet || echo "changes = true" >> $GITHUB_ENV
-      -name: commit and push if changes
+      - name: commit and push if changes
         if: env.changes == 'true'
         run: |
           git commit -m "update data hyperparameters"
