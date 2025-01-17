@@ -31,14 +31,28 @@ jobs:
       - name: Run data pipeline
         run: |
           python data_pipeline.py
+
       - name: check for changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
           git diff --staged --quiet || echo "changes = true" >> $GITHUB_ENV
+
       - name: commit and push if changes
         if: env.changes == 'true'
         run: |
           git commit -m "update data hyperparameters"
           git push
+
+      - name: Save generated plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-plot
+          path: data/plot/plot.png
+
+      - name: Save model
+        uses: actions/upload-artifact@v3
+        with:
+          name: model
+          path: data/model/model.h5
