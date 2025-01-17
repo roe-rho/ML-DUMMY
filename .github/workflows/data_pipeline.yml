@@ -47,7 +47,7 @@ jobs:
 
       - name: debug
         run: |
-          echho "Checking contetns of the directory"
+          echo "Checking contetns of the directory"
           ls -R data
    
 
