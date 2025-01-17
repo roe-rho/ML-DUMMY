@@ -4,7 +4,7 @@ import datetime
 
 # Starting the pipeline
 print("Starting data pipeline at ", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-print("----------------------------------------------")
+print("-----------------------------------------------")
 
 # Step 1: Extract data
 t0 = time.time()
