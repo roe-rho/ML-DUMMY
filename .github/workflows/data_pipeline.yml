@@ -45,14 +45,20 @@ jobs:
           git commit -m "update data hyperparameters"
           git push
 
+      - name: debug
+        run: |
+          echho "Checking contetns of the directory"
+          ls -R data
+   
+
       - name: Save generated plot
         uses: actions/upload-artifact@v3
         with:
           name: generated-plot
-          path: data/plot/plot.png
+          path: data/plots/training_plots.png
 
       - name: Save model
         uses: actions/upload-artifact@v3
         with:
           name: model
-          path: data/model/model.h5
+          path: data/model/cnn_cifar10.h5
