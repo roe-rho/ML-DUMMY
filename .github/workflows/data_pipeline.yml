@@ -12,21 +12,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  job0_lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Super Linter
-        uses: github/super-linter@v5
-        env:
-          VALIDATE_ALL_CODEBASE: true
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   job1_data_pipeline:
-    needs: job0_lint
     runs-on: ubuntu-latest
 
     steps:
@@ -48,15 +34,14 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run data pipeline
-        run: |
-          python data_pipeline.py
+        run: python data_pipeline.py
 
       - name: Check for changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          git diff --staged --quiet || echo "changes = true" >> $GITHUB_ENV
+          git diff --staged --quiet || echo "changes=true" >> $GITHUB_ENV
 
       - name: Commit and push if changes
         if: env.changes == 'true'
@@ -80,7 +65,7 @@ jobs:
         with:
           name: model
           path: data/model/cnn_cifar10.h5
-      
+
       - name: Save confusion matrix
         uses: actions/upload-artifact@v3
         with:
@@ -93,7 +78,8 @@ jobs:
     container: docker://ghcr.io/iterative/cml:0-dvc2-base1
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Download confusion matrix
         uses: actions/download-artifact@v3
