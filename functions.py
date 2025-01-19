@@ -6,12 +6,22 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+import logging  # New import
+
+# Configure logging
+logging.basicConfig(
+    filename='training.log',  # Log file name
+    level=logging.INFO,       # Logging level
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger()
 
 def extract_data():
     """Load and preprocess CIFAR-10 data."""
     (x_train, y_train), (x_test, y_test) = cifar10.load_data()
     x_train, x_test = x_train / 255.0, x_test / 255.0
     y_train, y_test = to_categorical(y_train, 10), to_categorical(y_test, 10)
+    logger.info("Data loaded and preprocessed.")
     return x_train, y_train, x_test, y_test
 
 def create_cnn(input_shape=(32, 32, 3), num_classes=10):
@@ -26,6 +36,7 @@ def create_cnn(input_shape=(32, 32, 3), num_classes=10):
         layers.Dense(64, activation='relu'),
         layers.Dense(num_classes, activation='softmax')
     ])
+    logger.info("CNN model created.")
     return model
 
 def save_model_summary(model, save_path='data/model_summary.txt'):
@@ -33,7 +44,7 @@ def save_model_summary(model, save_path='data/model_summary.txt'):
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, 'w') as f:
         model.summary(print_fn=lambda x: f.write(x + '\n'))
-    print(f"Model summary saved at: {save_path}")
+    logger.info(f"Model summary saved at: {save_path}")
 
 def train_model(model, x_train, y_train, epochs=10, batch_size=64):
     """Compile and train the CNN model."""
@@ -41,13 +52,14 @@ def train_model(model, x_train, y_train, epochs=10, batch_size=64):
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
     history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+    logger.info("Model training completed.")
     return history
 
 def save_model(model, save_path='data/model/cnn_cifar10.h5'):
     """Save the trained model to the specified path."""
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     model.save(save_path)
-    print(f"Model saved at: {save_path}")
+    logger.info(f"Model saved at: {save_path}")
 
 def plot_training(history, save_dir='data/plots'):
     """Plot and save training accuracy and loss."""
@@ -56,8 +68,8 @@ def plot_training(history, save_dir='data/plots'):
 
     # Accuracy
     plt.subplot(1, 2, 1)
-    plt.plot(history['accuracy'], label='Train Accuracy')
-    plt.plot(history['val_accuracy'], label='Validation Accuracy')
+    plt.plot(history.history['accuracy'], label='Train Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
     plt.title('Model Accuracy')
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
@@ -65,8 +77,8 @@ def plot_training(history, save_dir='data/plots'):
 
     # Loss
     plt.subplot(1, 2, 2)
-    plt.plot(history['loss'], label='Train Loss')
-    plt.plot(history['val_loss'], label='Validation Loss')
+    plt.plot(history.history['loss'], label='Train Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
     plt.title('Model Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
@@ -76,13 +88,13 @@ def plot_training(history, save_dir='data/plots'):
     plot_path = os.path.join(save_dir, 'training_plots.png')
     plt.savefig(plot_path)
     plt.show()
-    print(f"Plots saved at: {plot_path}")
+    logger.info(f"Training plots saved at: {plot_path}")
 
 def evaluate_model(model, x_test, y_test):
     """Evaluate the model on the test dataset."""
     test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
-    print(f"Test Loss: {test_loss}")
-    print(f"Test Accuracy: {test_accuracy}")
+    logger.info(f"Test Loss: {test_loss}")
+    logger.info(f"Test Accuracy: {test_accuracy}")
 
 def plot_confusion_matrix(model, x_test, y_test, save_dir='data/plots'):
     """Plot and save the confusion matrix."""
@@ -106,4 +118,4 @@ def plot_confusion_matrix(model, x_test, y_test, save_dir='data/plots'):
     plot_path = os.path.join(save_dir, 'confusion_matrix.png')
     plt.savefig(plot_path)
     plt.show()
-    print(f"Confusion matrix saved at: {plot_path}")
+    logger.info(f"Confusion matrix saved at: {plot_path}")
