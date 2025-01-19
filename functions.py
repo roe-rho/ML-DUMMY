@@ -1,7 +1,8 @@
 import os
-from tensorflow import layers, models
-from tensorflow import cifar10
-from tensorflow import to_categorical
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.utils import to_categorical
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
