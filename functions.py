@@ -2,7 +2,10 @@ import os
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.datasets import cifar10
+#new
 from tensorflow.keras.utils import to_categorical
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 def extract_data():
@@ -74,3 +77,23 @@ def evaluate_model(model, x_test, y_test):
     test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
     print(f"Test Loss: {test_loss}")
     print(f"Test Accuracy: {test_accuracy}")
+
+def plot_confusion_matrix(model, x_test, y_test, save_dir='data/plots'):
+    """Plot and save the confusion matrix."""
+    y_pred = model.predict(x_test)
+    y_pred_classes = y_pred.argmax(axis=1)
+    y_true = y_test.argmax(axis=1)
+    
+    cm = confusion_matrix(y_true, y_pred_classes)
+    
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=range(10), yticklabels=range(10))
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
+    
+    os.makedirs(save_dir, exist_ok=True)
+    plot_path = os.path.join(save_dir, 'confusion_matrix.png')
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"Confusion matrix saved at: {plot_path}")

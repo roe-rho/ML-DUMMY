@@ -7,7 +7,7 @@ on:
     - cron: '0 9 * * *'
 
 jobs:
-  run-data-pipeline:
+  job1:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,9 +47,8 @@ jobs:
 
       - name: debug
         run: |
-          echo "Checking contetns of the directory"
+          echo "Checking contents of the directory"
           ls -R data
-   
 
       - name: Save generated plot
         uses: actions/upload-artifact@v3
@@ -62,3 +61,30 @@ jobs:
         with:
           name: model
           path: data/model/cnn_cifar10.h5
+      
+      - name: Save confusion matrix
+        uses: actions/upload-artifact@v3
+        with:
+          name: confusion-matrix
+          path: data/plots/confusion_matrix.png
+
+  job2:
+    needs : job1
+    runs-on: ubuntu-latest
+    container: docker://ghcr.io/iterative/cml:0-dvc2-base1
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download confusion matrix
+        uses: actions/download-artifact@v3
+        with:
+          name: confusion-matrix
+          path: .
+
+      - name: Send confusion matrix with CML
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '![](./data/plots/confusion_matrix.png "Confusion Matrix")' >> report.md
+          cml comment create report.md
