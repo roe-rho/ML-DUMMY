@@ -69,7 +69,7 @@ jobs:
           path: data/plots/confusion_matrix.png
 
   job2:
-    needs : job1
+    needs: job1
     runs-on: ubuntu-latest
     container: docker://ghcr.io/iterative/cml:0-dvc2-base1
 
@@ -80,7 +80,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: confusion-matrix
-          path: .
+          path: data/plots
+
+      - name: Verify confusion matrix exists
+        run: |
+          if [ ! -f "./data/plots/confusion_matrix.png" ]; then
+            echo "Error: confusion matrix does not exist."
+            exit 1
+          fi
 
       - name: Send confusion matrix with CML
         env:
