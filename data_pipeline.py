@@ -43,8 +43,7 @@ print("---> Visualization completed in", str(t1-t0), "seconds\n")
 
 # Step 6: Generate confusion matrix
 t0 = time.time()
-y_pred = model.predict(x_test)
-plot_confusion_matrix(y_test, y_pred, 'data/plots/confusion_matrix.png')
+plot_confusion_matrix(model, x_test, y_test, 'data/plots')
 t1 = time.time()
 print("Step 6: Confusion matrix generated")
 print("---> Confusion matrix generation completed in", str(t1-t0), "seconds\n")
@@ -53,7 +52,7 @@ print("---> Confusion matrix generation completed in", str(t1-t0), "seconds\n")
 t0 = time.time()
 evaluate_model(model, x_test, y_test)
 t1 = time.time()
-print("Step 6: Model evaluation completed")
+print("Step 7: Model evaluation completed")
 print("---> Evaluation completed in", str(t1-t0), "seconds\n")
 
 print("----------------------------------------------")
