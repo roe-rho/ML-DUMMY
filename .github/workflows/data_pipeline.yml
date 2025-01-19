@@ -2,16 +2,35 @@ name: data-pipeline-workflow
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: '0 9 * * *'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  job1:
+  job0_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Super Linter
+        uses: github/super-linter@v5
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  job1_data_pipeline:
+    needs: job0_lint
     runs-on: ubuntu-latest
 
     steps:
-      - name: start message
+      - name: Start message
         run: echo "Starting data pipeline"
         
       - name: Checkout repository
@@ -32,20 +51,20 @@ jobs:
         run: |
           python data_pipeline.py
 
-      - name: check for changes
+      - name: Check for changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
           git diff --staged --quiet || echo "changes = true" >> $GITHUB_ENV
 
-      - name: commit and push if changes
+      - name: Commit and push if changes
         if: env.changes == 'true'
         run: |
           git commit -m "update data hyperparameters"
           git push
 
-      - name: debug
+      - name: Debug
         run: |
           echo "Checking contents of the directory"
           ls -R data
@@ -68,8 +87,8 @@ jobs:
           name: confusion-matrix
           path: data/plots/confusion_matrix.png
 
-  job2:
-    needs: job1
+  job2_sending_report:
+    needs: job1_data_pipeline
     runs-on: ubuntu-latest
     container: docker://ghcr.io/iterative/cml:0-dvc2-base1
 
