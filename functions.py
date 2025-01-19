@@ -28,6 +28,13 @@ def create_cnn(input_shape=(32, 32, 3), num_classes=10):
     ])
     return model
 
+def save_model_summary(model, save_path='data/model_summary.txt'):
+    """Save the model summary to a text file."""
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    with open(save_path, 'w') as f:
+        model.summary(print_fn=lambda x: f.write(x + '\n'))
+    print(f"Model summary saved at: {save_path}")
+
 def train_model(model, x_train, y_train, epochs=10, batch_size=64):
     """Compile and train the CNN model."""
     model.compile(optimizer='adam',

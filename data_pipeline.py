@@ -27,32 +27,39 @@ t1 = time.time()
 print("Step 3: Model trained")
 print("---> Model training completed in", str(t1-t0), "seconds\n")
 
-# Step 4: Save the model
+# Step 4: Save the model summary
+t0 = time.time()
+save_model_summary(model, 'data/model_summary.txt')
+t1 = time.time()
+print("Step 4: Model summary saved")
+print("---> Model summary saving completed in", str(t1-t0), "seconds\n")
+
+# Step 5: Save the model
 t0 = time.time()
 save_model(model, 'data/model/cnn_cifar10.h5')
 t1 = time.time()
-print("Step 4: Model saved")
+print("Step 5: Model saved")
 print("---> Model saving completed in", str(t1-t0), "seconds\n")
 
-# Step 5: Visualize training results
+# Step 6: Visualize training results
 t0 = time.time()
 plot_training(history.history, 'data/plots')
 t1 = time.time()
-print("Step 5: Training visualization completed")
+print("Step 6: Training visualization completed")
 print("---> Visualization completed in", str(t1-t0), "seconds\n")
 
-# Step 6: Generate confusion matrix
+# Step 7: Generate confusion matrix
 t0 = time.time()
 plot_confusion_matrix(model, x_test, y_test, 'data/plots')
 t1 = time.time()
-print("Step 6: Confusion matrix generated")
+print("Step 7: Confusion matrix generated")
 print("---> Confusion matrix generation completed in", str(t1-t0), "seconds\n")
 
-# Step 7: Evaluate the model
+# Step 8: Evaluate the model
 t0 = time.time()
 evaluate_model(model, x_test, y_test)
 t1 = time.time()
-print("Step 7: Model evaluation completed")
+print("Step 8: Model evaluation completed")
 print("---> Evaluation completed in", str(t1-t0), "seconds\n")
 
 print("----------------------------------------------")

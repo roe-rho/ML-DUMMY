@@ -72,7 +72,34 @@ jobs:
           name: confusion-matrix
           path: data/plots/confusion_matrix.png
 
-  job2_sending_report:
+      - name: Save model summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: model-summary
+          path: data/model_summary.txt
+
+  job2_generate_model_summary:
+    needs: job1_data_pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download model summary
+        uses: actions/download-artifact@v3
+        with:
+          name: model-summary
+          path: data
+
+      - name: Verify model summary exists
+        run: |
+          if [ ! -f "./data/model_summary.txt" ]; then
+            echo "Error: model summary does not exist."
+            exit 1
+          fi
+
+      - name: Display model summary
+        run: cat ./data/model_summary.txt
+
+  job3_sending_report:
     needs: job1_data_pipeline
     runs-on: ubuntu-latest
     container: docker://ghcr.io/iterative/cml:0-dvc2-base1
@@ -81,22 +108,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download confusion matrix
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: confusion-matrix
           path: data/plots
 
-      - name: Verify confusion matrix exists
+      - name: Download model summary
+        uses: actions/download-artifact@v3
+        with:
+          name: model-summary
+          path: data
+
+      - name: Verify artifacts exist
         run: |
           if [ ! -f "./data/plots/confusion_matrix.png" ]; then
             echo "Error: confusion matrix does not exist."
             exit 1
           fi
+          if [ ! -f "./data/model_summary.txt" ]; then
+            echo "Error: model summary does not exist."
+            exit 1
+          fi
 
-      - name: Send confusion matrix with CML
+      - name: Send report with CML
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo '# Report' > report.md
+          echo '## Confusion Matrix' >> report.md
           echo '![](./data/plots/confusion_matrix.png "Confusion Matrix")' >> report.md
+          echo '## Model Summary' >> report.md
+          echo '```' >> report.md
+          cat ./data/model_summary.txt >> report.md
+          echo '```' >> report.md
           cml comment create report.md
