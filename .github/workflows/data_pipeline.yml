@@ -60,25 +60,25 @@ jobs:
           name: generated-plot
           path: data/plots/training_plots.png
 
-      - name: Save model
+      - name: Save model as h5 file
         uses: actions/upload-artifact@v4
         with:
           name: model
           path: data/model/cnn_cifar10.h5
 
-      - name: Save confusion matrix
+      - name: Save confusion matrix as png
         uses: actions/upload-artifact@v4
         with:
           name: confusion-matrix
           path: data/plots/confusion_matrix.png
 
-      - name: Save model summary
+      - name: Save model summary as txt
         uses: actions/upload-artifact@v4
         with:
           name: model-summary
           path: data/model_summary.txt
 
-  job2_generate_model_summary:
+  job2_ModelSumasTXT:
     needs: job1_data_pipeline
     runs-on: ubuntu-latest
 
