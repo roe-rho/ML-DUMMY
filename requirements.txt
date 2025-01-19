@@ -1,7 +1,5 @@
 matplotlib
 tensorflow
 keras
-numpy
 scikit-learn
 seaborn
-logging
