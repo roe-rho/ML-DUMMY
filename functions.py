@@ -34,12 +34,12 @@ def create_cnn(input_shape=(32, 32, 3), num_classes=10):
         model = models.Sequential([
             layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Conv2D(128, (3, 3), activation='relu'),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Conv2D(128, (3, 3), activation='relu'),
             layers.Flatten(),
-            layers.Dense(64+64, activation='relu'),
-            layers.Dense(num_classes, activation='softmax')
+            layers.Dense(128, activation='relu'),
+            layers.Dense(num_classes, activation='softmax')  #128 is the number of filters
         ])
         logger.info("CNN model created.")
         return model
@@ -74,6 +74,13 @@ def train_model(model, x_train, y_train, epochs=100, batch_size=64):
 
         # Log a summary of the training results
         logger.info(f"Training completed for {epochs} epochs.")
+        
+        # Print final accuracy and loss after training
+        final_accuracy = history.history['accuracy'][-1]
+        final_loss = history.history['loss'][-1]
+        logger.info(f"Final Accuracy: {final_accuracy}")
+        logger.info(f"Final Loss: {final_loss}")
+
         return history
     except Exception as e:
         logger.error("Error in training the model: %s", str(e))
@@ -128,9 +135,6 @@ def evaluate_model(model, x_test, y_test):
         test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
         logger.info(f"Test Loss: {test_loss}")
         logger.info(f"Test Accuracy: {test_accuracy}")
-        # Print final test accuracy and loss
-        print(f"Final Test Accuracy: {test_accuracy}")
-        print(f"Final Test Loss: {test_loss}")
         return test_loss, test_accuracy
     except Exception as e:
         logger.error("Error in model evaluation: %s", str(e))
