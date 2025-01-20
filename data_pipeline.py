@@ -32,7 +32,7 @@ try:
 
     # Step 3: Train the model
     t0 = time.time()
-    history = train_model(model, x_train, y_train)
+    history = train_model(model, x_train, y_train)  # history is returned from train_model
     t1 = time.time()
     logger.info("Step 3: Model trained")
     logger.info("---> Model training completed in %s seconds", str(t1 - t0))
@@ -51,9 +51,9 @@ try:
     logger.info("Step 5: Model saved")
     logger.info("---> Model saving completed in %s seconds", str(t1 - t0))
 
-    # Step 6: Visualize training results
+    # Step 6: Visualize training results (plot accuracy and loss)
     t0 = time.time()
-    plot_training(history.history, 'data/plots')
+    plot_training(history.history, 'data/plots')  # Pass the `history.history` dictionary
     t1 = time.time()
     logger.info("Step 6: Training visualization completed")
     logger.info("---> Visualization completed in %s seconds", str(t1 - t0))
@@ -65,7 +65,7 @@ try:
     logger.info("Step 7: Confusion matrix generated")
     logger.info("---> Confusion matrix generation completed in %s seconds", str(t1 - t0))
 
-    # Step 8: Evaluate the model
+    # Step 8: Evaluate the model on the test data
     t0 = time.time()
     evaluate_model(model, x_test, y_test)
     t1 = time.time()

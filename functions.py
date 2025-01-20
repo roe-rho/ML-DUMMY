@@ -34,12 +34,12 @@ def create_cnn(input_shape=(32, 32, 3), num_classes=10):
         model = models.Sequential([
             layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Conv2D(64, (3, 3), activation='relu'),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Conv2D(64, (3, 3), activation='relu'),
             layers.Flatten(),
-            layers.Dense(64+64, activation='relu'),
-            layers.Dense(num_classes, activation='softmax') #ori was 64
+            layers.Dense(64, activation='relu'),
+            layers.Dense(num_classes, activation='softmax')
         ])
         logger.info("CNN model created.")
         return model
@@ -64,28 +64,16 @@ def train_model(model, x_train, y_train, epochs=10, batch_size=64):
         model.compile(optimizer='adam',
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
-        
+
         history = model.fit(
             x_train, y_train,
             epochs=epochs,
             batch_size=batch_size,
             validation_split=0.2
         )
-        
-        # Print a summary of the training results
-        train_accuracy = history.history['accuracy'][-1]
-        train_loss = history.history['loss'][-1]
-        val_accuracy = history.history['val_accuracy'][-1]
-        val_loss = history.history['val_loss'][-1]
-        
-        print("\nTraining Summary:")
-        print(f"  Final Train Loss: {train_loss:.4f}, Final Train Accuracy: {train_accuracy:.4f}")
-        print(f"  Final Validation Loss: {val_loss:.4f}, Final Validation Accuracy: {val_accuracy:.4f}")
-        
-        logger.info("Model training completed.")
-        logger.info(f"Final Train Loss: {train_loss}, Final Train Accuracy: {train_accuracy}")
-        logger.info(f"Final Validation Loss: {val_loss}, Final Validation Accuracy: {val_accuracy}")
-        
+
+        # Log a summary of the training results
+        logger.info(f"Training completed for {epochs} epochs.")
         return history
     except Exception as e:
         logger.error("Error in training the model: %s", str(e))
@@ -109,8 +97,8 @@ def plot_training(history, save_dir='data/plots'):
 
         # Accuracy
         plt.subplot(1, 2, 1)
-        plt.plot(history.history['accuracy'], label='Train Accuracy')
-        plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+        plt.plot(history['accuracy'], label='Train Accuracy')
+        plt.plot(history['val_accuracy'], label='Validation Accuracy')
         plt.title('Model Accuracy')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
@@ -118,8 +106,8 @@ def plot_training(history, save_dir='data/plots'):
 
         # Loss
         plt.subplot(1, 2, 2)
-        plt.plot(history.history['loss'], label='Train Loss')
-        plt.plot(history.history['val_loss'], label='Validation Loss')
+        plt.plot(history['loss'], label='Train Loss')
+        plt.plot(history['val_loss'], label='Validation Loss')
         plt.title('Model Loss')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
@@ -140,6 +128,7 @@ def evaluate_model(model, x_test, y_test):
         test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
         logger.info(f"Test Loss: {test_loss}")
         logger.info(f"Test Accuracy: {test_accuracy}")
+        return test_loss, test_accuracy
     except Exception as e:
         logger.error("Error in model evaluation: %s", str(e))
         raise
@@ -151,17 +140,17 @@ def plot_confusion_matrix(model, x_test, y_test, save_dir='data/plots'):
         y_pred = model.predict(x_test)
         y_pred_classes = y_pred.argmax(axis=1)
         y_true = y_test.argmax(axis=1)
-        
+
         # Compute confusion matrix
         cm = confusion_matrix(y_true, y_pred_classes)
-        
+
         # Plot the confusion matrix
         plt.figure(figsize=(10, 8))
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=range(10), yticklabels=range(10))
         plt.xlabel('Predicted')
         plt.ylabel('True')
         plt.title('Confusion Matrix')
-        
+
         # Save the plot
         os.makedirs(save_dir, exist_ok=True)
         plot_path = os.path.join(save_dir, 'confusion_matrix.png')
