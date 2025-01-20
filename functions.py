@@ -6,7 +6,7 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
-import logging  # New import
+import logging
 
 # Configure logging
 logging.basicConfig(
@@ -39,7 +39,7 @@ def create_cnn(input_shape=(32, 32, 3), num_classes=10):
             layers.Conv2D(64+64, (3, 3), activation='relu'),
             layers.Flatten(),
             layers.Dense(64+64, activation='relu'),
-            layers.Dense(num_classes, activation='softmax') # add +64 to the number of filters ori 64
+            layers.Dense(num_classes, activation='softmax') #ori was 64
         ])
         logger.info("CNN model created.")
         return model
@@ -59,13 +59,33 @@ def save_model_summary(model, save_path='data/model_summary.txt'):
         raise
 
 def train_model(model, x_train, y_train, epochs=10, batch_size=64):
-    """Compile and train the CNN model."""
+    """Compile and train the CNN model with a summary of training and validation metrics."""
     try:
         model.compile(optimizer='adam',
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
-        history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+        
+        history = model.fit(
+            x_train, y_train,
+            epochs=epochs,
+            batch_size=batch_size,
+            validation_split=0.2
+        )
+        
+        # Print a summary of the training results
+        train_accuracy = history.history['accuracy'][-1]
+        train_loss = history.history['loss'][-1]
+        val_accuracy = history.history['val_accuracy'][-1]
+        val_loss = history.history['val_loss'][-1]
+        
+        print("\nTraining Summary:")
+        print(f"  Final Train Loss: {train_loss:.4f}, Final Train Accuracy: {train_accuracy:.4f}")
+        print(f"  Final Validation Loss: {val_loss:.4f}, Final Validation Accuracy: {val_accuracy:.4f}")
+        
         logger.info("Model training completed.")
+        logger.info(f"Final Train Loss: {train_loss}, Final Train Accuracy: {train_accuracy}")
+        logger.info(f"Final Validation Loss: {val_loss}, Final Validation Accuracy: {val_accuracy}")
+        
         return history
     except Exception as e:
         logger.error("Error in training the model: %s", str(e))
