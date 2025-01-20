@@ -58,7 +58,7 @@ def save_model_summary(model, save_path='data/model_summary.txt'):
         logger.error("Error in saving model summary: %s", str(e))
         raise
 
-def train_model(model, x_train, y_train, epochs=10, batch_size=64):
+def train_model(model, x_train, y_train, epochs=100, batch_size=64):
     """Compile and train the CNN model with a summary of training and validation metrics."""
     try:
         model.compile(optimizer='adam',
@@ -128,6 +128,9 @@ def evaluate_model(model, x_test, y_test):
         test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
         logger.info(f"Test Loss: {test_loss}")
         logger.info(f"Test Accuracy: {test_accuracy}")
+        # Print final test accuracy and loss
+        print(f"Final Test Accuracy: {test_accuracy}")
+        print(f"Final Test Loss: {test_loss}")
         return test_loss, test_accuracy
     except Exception as e:
         logger.error("Error in model evaluation: %s", str(e))
