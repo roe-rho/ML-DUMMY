@@ -29,23 +29,64 @@ def extract_data():
         raise
 
 def create_cnn(input_shape=(32, 32, 3), num_classes=10):
-    """Define and return a CNN model."""
+    """Define and return an enhanced CNN model with improved parameters for better accuracy."""
     try:
         model = models.Sequential([
-            layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
+            # First convolutional block
+            layers.Conv2D(64, (3, 3), activation='relu', padding='same', input_shape=input_shape),
+            layers.BatchNormalization(),
+            layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
+            layers.BatchNormalization(),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Dropout(0.25),
+
+            # Second convolutional block
+            layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
+            layers.BatchNormalization(),
+            layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
+            layers.BatchNormalization(),
             layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64+64, (3, 3), activation='relu'),
+            layers.Dropout(0.3),
+
+            # Third convolutional block
+            layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
+            layers.BatchNormalization(),
+            layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
+            layers.BatchNormalization(),
+            layers.MaxPooling2D((2, 2)),
+            layers.Dropout(0.4),
+
+            # Flatten and fully connected layers
             layers.Flatten(),
-            layers.Dense(64+64, activation='relu'),
-            layers.Dense(num_classes, activation='softmax') # add +64 to the number of filters ori 64
+            layers.Dense(512, activation='relu'),
+            layers.BatchNormalization(),
+            layers.Dropout(0.5),
+            layers.Dense(num_classes, activation='softmax')
         ])
-        logger.info("CNN model created.")
+
+        logger.info("Enhanced CNN model created.")
         return model
     except Exception as e:
         logger.error("Error in CNN creation: %s", str(e))
         raise
+    # def create_cnn(input_shape=(32, 32, 3), num_classes=10):
+    #     """Define and return a CNN model."""
+    #     try:
+    #         model = models.Sequential([
+    #             layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
+    #             layers.MaxPooling2D((2, 2)),
+    #             layers.Conv2D(64, (3, 3), activation='relu'),
+    #             layers.MaxPooling2D((2, 2)),
+    #             layers.Conv2D(64, (3, 3), activation='relu'),
+    #             layers.Flatten(),
+    #             layers.Dense(64, activation='relu'),
+    #             layers.Dense(num_classes, activation='softmax')
+    #         ])
+    #         logger.info("CNN model created.")
+    #         return model
+    #     except Exception as e:
+    #         logger.error("Error in CNN creation: %s", str(e))
+    #         raise
 
 def save_model_summary(model, save_path='data/model_summary.txt'):
     """Save the model summary to a text file."""
