@@ -161,6 +161,7 @@ def evaluate_model(model, x_test, y_test):
         test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
         logger.info(f"Test Loss: {test_loss}")
         logger.info(f"Test Accuracy: {test_accuracy}")
+        print(f"Test Accuracy: {test_accuracy * 100:.2f}%")  # Print accuracy to console
     except Exception as e:
         logger.error("Error in model evaluation: %s", str(e))
         raise
