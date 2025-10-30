@@ -74,6 +74,8 @@ def train_model(model, x_train, y_train, epochs=10, batch_size=64):
 def save_model(model, save_path='data/model/cnn_cifar10.h5'):
     """Save the trained model to the specified path."""
     try:
+        if not save_path or not os.path.dirname(save_path):
+            raise ValueError("The save_path cannot be empty or invalid.")
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         model.save(save_path)
         logger.info(f"Model saved at: {save_path}")
